@@ -40,8 +40,7 @@ jobs:
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # README.mdをreleaseする
         run: |
-          gh release create $(cat VERSION) README.md
+          gh release upload $(cat VERSION) README.md
 
 
