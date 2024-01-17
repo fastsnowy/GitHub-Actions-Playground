@@ -1,7 +1,5 @@
 # GitHub-Actions-Playground
 
----
+## これは何？
 
-## GitHub Actions
-
-適当に試してみる場所
+GitHub Actionsを試すためのリポジトリ
