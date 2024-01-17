@@ -27,16 +27,24 @@ jobs:
       
       - name: Check out
         uses: actions/checkout@v4
-      # Drafts your next Release notes as Pull Requests are merged into "master"
+
       - name: Draft Release
-        # (Optional) specify config name to use, relative to .github/. Default: release-drafter.yml
-        # with:
-        #   config-name: my-config.yml
-        #   disable-autolabeler: true
         id: create_release_notes
         uses: release-drafter/release-drafter@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: create_release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.create_release_notes.outputs.tag_name }}
+          release_name: ${{ steps.create_release_notes.outputs.name}}
+          body: ${{ steps.create_release_notes.outputs.body }}
+          draft: false
+          prerelease: false
 
       - name: Upload Release Asset
         id: upload-release-asset 
