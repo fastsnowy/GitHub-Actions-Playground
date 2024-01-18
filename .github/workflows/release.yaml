@@ -6,7 +6,7 @@ on:
     branches:
       - main
   pull_request:
-    types: [closed]
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: read
@@ -14,18 +14,10 @@ permissions:
 jobs:
   update_release_draft:
     permissions:
-      # write permission is required to create a github release
       contents: write
-      # write permission is required for autolabeler
-      # otherwise, read permission is required at least
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      # (Optional) GitHub Enterprise requires GHE_HOST variable set
-      #- name: Set GHE_HOST
-      #  run: |
-      #    echo "GHE_HOST=${GITHUB_SERVER_URL##https:\/\/}" >> $GITHUB_ENV
-      
       - name: Check out
         uses: actions/checkout@v4
       
@@ -36,7 +28,7 @@ jobs:
           TZ: "Asia/Tokyo"
           VERSION_PREFIX: "v"
         run: |
-          TODAY=$(date "+%Y-%m-%d")
+          TODAY=$(date "+%Y.%m.%d")
 
           RELEASE_TAG=$(gh release --repo ${{github.repository}} view --json tagName --jq .tagName)
           if [ "${RELEASE_TAG}" = "" ]; then
@@ -44,7 +36,7 @@ jobs:
             echo "There is no release, use ${RELEASE_TAG}"
           fi
 
-          TAGS=(${RELEASE_TAG//_/ })
+          TAGS=(${RELEASE_TAG//-/ })
           MAJOR_VERSION=${TAGS[0]}
           PATCH_VERSION=${TAGS[1]}
 
@@ -56,7 +48,7 @@ jobs:
             PATCH_VERSION=1
           fi
 
-          VERSION="${PREFIX}_${PATCH_VERSION}"
+          VERSION="${PREFIX}-${PATCH_VERSION}"
 
           echo ::set-output name=version::${VERSION}
           echo "Version set to ${VERSION}"
@@ -68,7 +60,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag: ${{ steps.calver.outputs.version }}
-          name: ${{ steps.calver.outputs.version }}
+          name: ${{ steps.calver.outputs.version }} + "🚀"
           version: ${{ steps.calver.outputs.version }}
           publish: true
 
@@ -78,7 +70,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release_notes.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          upload_url: ${{ steps.create_release_notes.outputs.upload_url }}
           asset_path: ./README.md
           asset_name: README.md
           asset_content_type: text/plain
