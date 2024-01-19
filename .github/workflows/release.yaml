@@ -60,7 +60,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag: ${{ steps.calver.outputs.version }}
-          name: ${{ steps.calver.outputs.version }} + "🚀"
+          name: ${{ steps.calver.outputs.version }} 🚀
           version: ${{ steps.calver.outputs.version }}
           publish: true
 
