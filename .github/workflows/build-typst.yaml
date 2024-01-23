@@ -4,6 +4,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   build_typst_documents:
     runs-on: ubuntu-latest
